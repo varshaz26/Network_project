@@ -18,16 +18,24 @@ stages:
           # Checkout code from the repository
           - checkout: self
 
-          # Install Terraform using Azure DevOps task
-          - task: HashiCorpTerraformInstaller@0
+          # Install Terraform manually
+          - task: Bash@3
+            displayName: 'Install Terraform'
             inputs:
-              terraformVersion: '1.4.0'
+              targetType: 'inline'
+              script: |
+                sudo apt-get update -y
+                sudo apt-get install -y wget unzip
+                wget https://releases.hashicorp.com/terraform/1.4.0/terraform_1.4.0_linux_amd64.zip
+                unzip terraform_1.4.0_linux_amd64.zip
+                sudo mv terraform /usr/local/bin/
+                terraform -version  # Verify the installation
 
           # Configure Azure credentials for Terraform
           - task: AzureCLI@2
             displayName: 'Login to Azure'
             inputs:
-              azureSubscription: 'YOUR_AZURE_SERVICE_CONNECTION'  # Replace with your Azure DevOps service connection
+              azureSubscription: 'Azure for Students'  # Replace with your Azure DevOps service connection
               scriptType: 'bash'
               scriptLocation: 'inlineScript'
               inlineScript: |
